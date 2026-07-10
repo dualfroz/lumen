@@ -1,0 +1,16 @@
+# gradle / kotlin build tooling
+.gradle/
+build/
+.kotlin/
+
+# compiled output
+*.class
+
+# editors
+.idea/
+*.iml
+
+# os / logs / env
+.DS_Store
+*.log
+.env
