@@ -1,0 +1,39 @@
+import "lib/text.lumen"
+
+// Parse a small CSV document into rows of trimmed fields, then compute a
+// column total. Everything runs on the standard library and the text module.
+
+fn parseCsv(document) {
+    let rows = []
+    for (line in document.split("\n")) {
+        if (line.trim().len() > 0) {
+            rows.push(trimAll(line.split(",")))
+        }
+    }
+    return rows
+}
+
+fn columnValues(rows, index) {
+    return rows.map(fn(row) { return row[index] })
+}
+
+let document = "name, score
+alice, 90
+bob, 75
+carol, 88"
+
+let rows = parseCsv(document)
+let header = rows[0]
+let body = rows.slice(1, rows.len())
+
+println("columns: " + header.join(" | "))
+for (row in body) {
+    println(capitalize(row[0]) + " scored " + row[1])
+}
+
+let scores = columnValues(body, 1).map(fn(cell) { return int(cell) })
+println("total: " + str(scores.sum()))
+println("best:  " + str(scores.max()))
+
+assert(scores.sum() == 253, "csv total wrong")
+println("csv checks passed")

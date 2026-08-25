@@ -1,0 +1,33 @@
+// Closures capturing mutable state, plus higher order functions.
+
+fn makeCounter() {
+    var count = 0
+    fn increment() {
+        count = count + 1
+        return count
+    }
+    return increment
+}
+
+let counter = makeCounter()
+println("counter: " + str(counter()) + " " + str(counter()) + " " + str(counter()))
+
+fn makeAdder(amount) {
+    fn add(value) {
+        return value + amount
+    }
+    return add
+}
+
+let add10 = makeAdder(10)
+let add100 = makeAdder(100)
+println("add10(5) = " + str(add10(5)))
+println("add100(5) = " + str(add100(5)))
+
+let numbers = [1, 2, 3, 4, 5]
+let doubled = map(fn(x) { return x * 2 }, numbers)
+let evens = filter(fn(x) { return x % 2 == 0 }, numbers)
+let total = reduce(fn(acc, x) { return acc + x }, numbers, 0)
+println("doubled: " + str(doubled))
+println("evens: " + str(evens))
+println("sum: " + str(total))

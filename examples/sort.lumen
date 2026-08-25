@@ -1,0 +1,30 @@
+// Quicksort built on lists, recursion and higher level pieces of the language.
+
+fn quicksort(items) {
+    if (len(items) < 2) {
+        return items
+    }
+    let pivot = items[0]
+    let less = []
+    let greater = []
+    var i = 1
+    while (i < len(items)) {
+        let current = items[i]
+        if (current < pivot) {
+            push(less, current)
+        } else {
+            push(greater, current)
+        }
+        i = i + 1
+    }
+    let result = quicksort(less)
+    push(result, pivot)
+    for (value in quicksort(greater)) {
+        push(result, value)
+    }
+    return result
+}
+
+let data = [5, 3, 8, 1, 9, 2, 7, 4, 6, 0]
+println("input:  " + str(data))
+println("sorted: " + str(quicksort(data)))

@@ -1,0 +1,45 @@
+import "lib/mathx.lumen"
+
+// A tiny reverse-polish-notation calculator written in Lumen.
+// It tokenizes a space separated expression and folds it over a stack.
+
+fn evalRpn(expression) {
+    let tokens = expression.split(" ")
+    let stack = []
+    for (token in tokens) {
+        if (token == "+") {
+            let b = stack.pop()
+            let a = stack.pop()
+            stack.push(a + b)
+        } else if (token == "-") {
+            let b = stack.pop()
+            let a = stack.pop()
+            stack.push(a - b)
+        } else if (token == "*") {
+            let b = stack.pop()
+            let a = stack.pop()
+            stack.push(a * b)
+        } else if (token == "/") {
+            let b = stack.pop()
+            let a = stack.pop()
+            stack.push(a / b)
+        } else {
+            stack.push(int(token))
+        }
+    }
+    assert(stack.len() == 1, "expression did not reduce to a single value")
+    return stack.pop()
+}
+
+let expr = "3 4 + 5 * 2 -"
+println(expr + " = " + str(evalRpn(expr)))
+println("2 3 4 * + = " + str(evalRpn("2 3 4 * +")))
+println("10 2 / 3 - = " + str(evalRpn("10 2 / 3 -")))
+
+// factorial and gcd come from the imported module.
+println("6! = " + str(factorial(6)))
+println("gcd(48, 36) = " + str(gcd(48, 36)))
+
+assert(factorial(5) == 120, "factorial broken")
+assert(evalRpn("3 4 +") == 7, "rpn broken")
+println("calc checks passed")

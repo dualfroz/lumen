@@ -1,0 +1,28 @@
+// A tour of the standard library and method-call syntax.
+
+let greeting = "  Hello, Lumen World  "
+println("trimmed:   " + greeting.trim())
+println("upper:     " + greeting.trim().upper())
+println("words:     " + str(greeting.trim().split(" ")))
+
+let numbers = [5, 3, 8, 1, 9, 2]
+println("sorted:    " + str(numbers.sort()))
+println("reversed:  " + str(numbers.reverse()))
+println("sum:       " + str(numbers.sum()))
+println("min/max:   " + str(numbers.min()) + " / " + str(numbers.max()))
+println("evens:     " + str(numbers.filter(fn(n) { return n % 2 == 0 })))
+println("squares:   " + str(numbers.map(fn(n) { return n * n })))
+
+let scores = {"alice": 90, "bob": 75}
+println("has alice: " + str(scores.has("alice")))
+println("keys:      " + str(scores.keys()))
+println("entries:   " + str(scores.entries()))
+
+println("sqrt 144:  " + str(sqrt(144)))
+println("pow 2 10:  " + str(pow(2, 10)))
+println("floor 3.7: " + str(floor(3.7)))
+println("round 2.5: " + str(round(2.5)))
+
+assert(numbers.sum() == 28, "sum should be 28")
+assert("lumen".upper() == "LUMEN", "upper should work")
+println("all assertions passed")
