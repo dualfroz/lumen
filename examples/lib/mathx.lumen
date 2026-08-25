@@ -1,0 +1,40 @@
+// Numeric helpers built on the math builtins.
+
+fn factorial(n) {
+    var product = 1
+    var i = 2
+    while (i <= n) {
+        product = product * i
+        i = i + 1
+    }
+    return product
+}
+
+fn gcd(a, b) {
+    var x = abs(a)
+    var y = abs(b)
+    while (y != 0) {
+        let remainder = x % y
+        x = y
+        y = remainder
+    }
+    return x
+}
+
+fn clamp(value, low, high) {
+    return max(low, min(value, high))
+}
+
+fn isPrime(n) {
+    if (n < 2) {
+        return false
+    }
+    var divisor = 2
+    while (divisor * divisor <= n) {
+        if (n % divisor == 0) {
+            return false
+        }
+        divisor = divisor + 1
+    }
+    return true
+}

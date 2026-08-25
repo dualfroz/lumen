@@ -1,0 +1,32 @@
+// Text helpers built on the standard string methods.
+
+fn capitalize(text) {
+    if (text.len() == 0) {
+        return text
+    }
+    let head = text.substring(0, 1).upper()
+    let rest = text.substring(1, text.len())
+    return head + rest
+}
+
+fn repeat(text, times) {
+    var joined = ""
+    var i = 0
+    while (i < times) {
+        joined = joined + text
+        i = i + 1
+    }
+    return joined
+}
+
+fn padLeft(text, width, filler) {
+    var padded = text
+    while (padded.len() < width) {
+        padded = filler + padded
+    }
+    return padded
+}
+
+fn trimAll(parts) {
+    return parts.map(fn(part) { return part.trim() })
+}
