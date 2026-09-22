@@ -1,5 +1,3 @@
-// Closures capturing mutable state, plus higher order functions.
-
 fn makeCounter() {
     var count = 0
     fn increment() {

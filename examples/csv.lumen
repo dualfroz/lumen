@@ -1,8 +1,5 @@
 import "lib/text.lumen"
 
-// Parse a small CSV document into rows of trimmed fields, then compute a
-// column total. Everything runs on the standard library and the text module.
-
 fn parseCsv(document) {
     let rows = []
     for (line in document.split("\n")) {

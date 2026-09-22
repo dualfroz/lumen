@@ -1,5 +1,3 @@
-// Numeric helpers built on the math builtins.
-
 fn factorial(n) {
     var product = 1
     var i = 2

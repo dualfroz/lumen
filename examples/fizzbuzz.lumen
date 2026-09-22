@@ -1,5 +1,3 @@
-// Classic FizzBuzz for the numbers 1 through 15.
-
 for (n in range(1, 16)) {
     if (n % 15 == 0) {
         println("FizzBuzz")

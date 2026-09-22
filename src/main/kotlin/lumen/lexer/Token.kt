@@ -1,13 +1,11 @@
 package lumen.lexer
 
 enum class TokenType {
-    // literals
     IntLiteral,
     DoubleLiteral,
     StringLiteral,
     Identifier,
 
-    // keywords
     Let,
     Var,
     Fn,
@@ -25,7 +23,6 @@ enum class TokenType {
     Not,
     Import,
 
-    // punctuation
     Plus,
     Minus,
     Star,

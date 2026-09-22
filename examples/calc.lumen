@@ -1,8 +1,5 @@
 import "lib/mathx.lumen"
 
-// A tiny reverse-polish-notation calculator written in Lumen.
-// It tokenizes a space separated expression and folds it over a stack.
-
 fn evalRpn(expression) {
     let tokens = expression.split(" ")
     let stack = []
@@ -36,7 +33,6 @@ println(expr + " = " + str(evalRpn(expr)))
 println("2 3 4 * + = " + str(evalRpn("2 3 4 * +")))
 println("10 2 / 3 - = " + str(evalRpn("10 2 / 3 -")))
 
-// factorial and gcd come from the imported module.
 println("6! = " + str(factorial(6)))
 println("gcd(48, 36) = " + str(gcd(48, 36)))
 

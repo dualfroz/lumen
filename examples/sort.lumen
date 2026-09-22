@@ -1,5 +1,3 @@
-// Quicksort built on lists, recursion and higher level pieces of the language.
-
 fn quicksort(items) {
     if (len(items) < 2) {
         return items

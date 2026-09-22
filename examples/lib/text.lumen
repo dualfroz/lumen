@@ -1,5 +1,3 @@
-// Text helpers built on the standard string methods.
-
 fn capitalize(text) {
     if (text.len() == 0) {
         return text
