@@ -28,6 +28,7 @@ class Lexer(private val source: String) {
     private var line = 1
     private var lineStart = 0
     private var groupingDepth = 0
+    private val enclosingGroupingDepths = ArrayDeque<Int>()
 
     fun scan(): List<Token> {
         while (!atEnd()) {
@@ -63,8 +64,15 @@ class Lexer(private val source: String) {
                 if (groupingDepth > 0) groupingDepth--
                 add(TokenType.RightBracket)
             }
-            '{' -> add(TokenType.LeftBrace)
-            '}' -> add(TokenType.RightBrace)
+            '{' -> {
+                enclosingGroupingDepths.addLast(groupingDepth)
+                groupingDepth = 0
+                add(TokenType.LeftBrace)
+            }
+            '}' -> {
+                groupingDepth = enclosingGroupingDepths.removeLastOrNull() ?: 0
+                add(TokenType.RightBrace)
+            }
             ',' -> add(TokenType.Comma)
             ':' -> add(TokenType.Colon)
             ';' -> add(TokenType.Semicolon)
@@ -147,7 +155,7 @@ class Lexer(private val source: String) {
             'r' -> '\r'
             '"' -> '"'
             '\\' -> '\\'
-            '0' -> ' '
+            '0' -> '\u0000'
             else -> throw LexError("invalid escape '\\$e'", line, columnOf(current - 2))
         }
     }

@@ -14,7 +14,7 @@ private enum class FunctionType { Script, Function }
 
 private class Local(val name: String, var depth: Int, var captured: Boolean, val mutable: Boolean)
 
-private class UpvalueDesc(val index: Int, val isLocal: Boolean)
+private class UpvalueDesc(val index: Int, val isLocal: Boolean, val mutable: Boolean)
 
 private class FunctionScope(
     val enclosing: FunctionScope?,
@@ -55,7 +55,9 @@ class Compiler(private val globalMutability: MutableMap<String, Boolean> = mutab
     private fun statement(stmt: Stmt) {
         currentColumn = stmt.column
         when (stmt) {
-            is ImportStmt -> {}
+            is ImportStmt -> if (scope.scopeDepth > 0) {
+                throw CompileError("import is only allowed at module top level", stmt.line)
+            }
             is LetStmt -> letStatement(stmt)
             is ExprStmt -> {
                 expression(stmt.expr)
@@ -236,25 +238,25 @@ class Compiler(private val globalMutability: MutableMap<String, Boolean> = mutab
         expression(expr.value)
         val local = resolveLocal(scope, expr.name, expr.line)
         if (local != -1) {
-            if (!scope.locals[local].mutable) {
-                throw CompileError("cannot assign to immutable '${expr.name}'", expr.line)
-            }
+            if (!scope.locals[local].mutable) rejectImmutable(expr)
             emit(Opcode.SetLocal, expr.line)
             emit(local, expr.line)
             return
         }
         val upvalue = resolveUpvalue(scope, expr.name, expr.line)
         if (upvalue != -1) {
+            if (!scope.upvalues[upvalue].mutable) rejectImmutable(expr)
             emit(Opcode.SetUpvalue, expr.line)
             emit(upvalue, expr.line)
             return
         }
-        if (globalMutability[expr.name] == false) {
-            throw CompileError("cannot assign to immutable '${expr.name}'", expr.line)
-        }
+        if (globalMutability[expr.name] == false) rejectImmutable(expr)
         emit(Opcode.SetGlobal, expr.line)
         emit(nameConstant(expr.name), expr.line)
     }
+
+    private fun rejectImmutable(expr: Assign): Nothing =
+        throw CompileError("cannot assign to immutable '${expr.name}'", expr.line)
 
     private fun variableAccess(name: String, line: Int) {
         val local = resolveLocal(scope, name, line)
@@ -391,21 +393,21 @@ class Compiler(private val globalMutability: MutableMap<String, Boolean> = mutab
         val local = resolveLocal(enclosing, name, line)
         if (local != -1) {
             enclosing.locals[local].captured = true
-            return addUpvalue(target, local, true)
+            return addUpvalue(target, local, true, enclosing.locals[local].mutable)
         }
         val upvalue = resolveUpvalue(enclosing, name, line)
         if (upvalue != -1) {
-            return addUpvalue(target, upvalue, false)
+            return addUpvalue(target, upvalue, false, enclosing.upvalues[upvalue].mutable)
         }
         return -1
     }
 
-    private fun addUpvalue(target: FunctionScope, index: Int, isLocal: Boolean): Int {
+    private fun addUpvalue(target: FunctionScope, index: Int, isLocal: Boolean, mutable: Boolean): Int {
         for (i in target.upvalues.indices) {
             val existing = target.upvalues[i]
             if (existing.index == index && existing.isLocal == isLocal) return i
         }
-        target.upvalues.add(UpvalueDesc(index, isLocal))
+        target.upvalues.add(UpvalueDesc(index, isLocal, mutable))
         return target.upvalues.size - 1
     }
 

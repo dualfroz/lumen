@@ -1,11 +1,9 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     kotlin("jvm") version "2.0.21"
     application
 }
 
-group = "space.vulp.lumen"
+group = "com.dualfroz.lumen"
 version = "0.1.0"
 
 repositories {
@@ -17,14 +15,7 @@ dependencies {
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
-    }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    jvmToolchain(17)
 }
 
 application {
