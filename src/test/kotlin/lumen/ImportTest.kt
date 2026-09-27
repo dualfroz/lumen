@@ -1,9 +1,12 @@
 package lumen
 
+import lumen.module.ModuleError
 import java.io.File
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 class ImportTest {
     private fun runModules(files: Map<String, String>, main: String): String {
@@ -61,5 +64,26 @@ class ImportTest {
             "main.lumen"
         )
         assertEquals("AB\n", output)
+    }
+
+    @Test
+    fun importInsideFunctionIsCompileError() {
+        val failure = assertFailsWith<ModuleError> {
+            runModules(
+                mapOf("main.lumen" to "fn f() {\n    import \"missing.lumen\"\n    return 1\n}\nprintln(f())"),
+                "main.lumen"
+            )
+        }
+        val error = assertIs<CompileError>(failure.error)
+        assertEquals("import is only allowed at module top level", error.rawMessage)
+        assertEquals(2, error.line)
+    }
+
+    @Test
+    fun importInsideBlockIsCompileError() {
+        val error = assertFailsWith<CompileError> {
+            Lumen.compile("if (true) {\n    import \"lib.lumen\"\n}")
+        }
+        assertEquals("import is only allowed at module top level", error.rawMessage)
     }
 }

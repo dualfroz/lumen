@@ -59,6 +59,25 @@ class LexerTest {
     }
 
     @Test
+    fun bracesInsideGroupingRestoreNewlines() {
+        assertEquals(
+            listOf(
+                TokenType.LeftParen, TokenType.LeftBrace, TokenType.IntLiteral, TokenType.Newline,
+                TokenType.IntLiteral, TokenType.RightBrace, TokenType.IntLiteral, TokenType.RightParen,
+                TokenType.Newline, TokenType.IntLiteral, TokenType.Eof
+            ),
+            types("({1\n2}\n3)\n4")
+        )
+    }
+
+    @Test
+    fun decodesNulEscape() {
+        val token = Lexer("\"a\\0b\"").scan().first()
+        assertEquals("a\u0000b", token.stringValue)
+        assertEquals(3, token.stringValue.length)
+    }
+
+    @Test
     fun scansOperators() {
         assertEquals(
             listOf(

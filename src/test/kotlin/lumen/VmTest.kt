@@ -221,6 +221,77 @@ class VmTest {
     }
 
     @Test
+    fun assigningCapturedImmutableFails() {
+        val direct = """
+            fn outer() {
+                let x = 1
+                fn inner() { x = 2 }
+                inner()
+                return x
+            }
+            println(outer())
+        """.trimIndent()
+        val error = assertFailsWith<CompileError> { output(direct) }
+        assertEquals("cannot assign to immutable 'x'", error.rawMessage)
+        assertEquals(3, error.line)
+
+        val throughTwoLevels = """
+            fn outer() {
+                let x = 1
+                fn middle() {
+                    fn inner() { x = 2 }
+                    inner()
+                }
+                middle()
+                return x
+            }
+        """.trimIndent()
+        assertFailsWith<CompileError> { output(throughTwoLevels) }
+    }
+
+    @Test
+    fun assigningCapturedMutableStillWorks() {
+        val program = """
+            fn outer() {
+                var x = 1
+                fn middle() {
+                    fn inner() { x = x + 1 }
+                    inner()
+                }
+                middle()
+                return x
+            }
+            println(outer())
+        """.trimIndent()
+        assertEquals("2\n", output(program))
+    }
+
+    @Test
+    fun statementsSeparateByNewlineInsideCallbackBody() {
+        val program = """
+            println(map(fn(n) {
+                let d = n
+                [d]
+                (d)
+                return d * 10
+            }, [1, 2]))
+        """.trimIndent()
+        assertEquals("[10, 20]\n", output(program))
+    }
+
+    @Test
+    fun newlinesStayIgnoredInGroupingAfterNestedBody() {
+        val program = """
+            let total = reduce(fn(a, b) { return a + b }, [1,
+                2,
+                3], 0
+            )
+            println(total)
+        """.trimIndent()
+        assertEquals("6\n", output(program))
+    }
+
+    @Test
     fun wrongArgumentCountFails() {
         assertFailsWith<RuntimeError> { output("fn f(a, b) { return a }\nf(1)") }
     }
